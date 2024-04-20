@@ -1,4 +1,8 @@
-# node moudules 파일
+# node modules 파일
 ./Front/node_modules
 ./Front/package-lock.json
 
+# python 파일
+python/bin
+python/lib
+pyvenv.cfg
