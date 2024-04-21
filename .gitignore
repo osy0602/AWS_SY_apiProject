@@ -6,3 +6,8 @@
 python/bin
 python/lib
 pyvenv.cfg
+python/fastapi/__pycache__
+python/fastapi/node_modules
+python/fastapi/package*
+
+.env
