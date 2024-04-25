@@ -16,22 +16,22 @@ with open(csv_file_path, 'r', encoding='utf-8') as f:
         # if len(data) == 0:
         #     data.
         d = {
-            '상품군별(1)': line[0],
+            '상품군별(1)': str(line[0].strip()),
             '2019': int(line[1]),
-            '2019.1': int(line[2]),
-            '2019.2': float(line[3]),
+            '20191': int(line[2]),
+            '20192': float(line[3]),
             '2020': int(line[4]),
-            '2020.1': int(line[5]),
-            '2020.2': float(line[6]),
+            '20201': int(line[5]),
+            '20202': float(line[6]),
             '2021': int(line[7]),
-            '2021.1': int(line[8]),
-            '2021.2': float(line[9]),
+            '20211': int(line[8]),
+            '20212': float(line[9]),
             '2022': int(line[10]),
-            '2022.1' : int(line[11]),
-            '2022.2' : float(line[12]),
+            '20221' : int(line[11]),
+            '20222' : float(line[12]),
             '2023' : int(line[13]),
-            '2023.1' : int(line[14]),
-            '2023.2' : float(line[15])
+            '20231' : int(line[14]),
+            '20232' : float(line[15])
         }
         data.append(d)
 

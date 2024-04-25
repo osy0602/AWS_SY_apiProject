@@ -2,7 +2,6 @@ import requests
 from fastapi import FastAPI
 from pymongo import MongoClient
 from dotenv import dotenv_values
-
 config = dotenv_values("../../.env")
 
 app = FastAPI()
@@ -14,7 +13,6 @@ client = MongoClient(host=config["host"], port=27017)
 
 db = client['api_pj']
 col = db['cross_border']
-
 
 @app.get(path='/')
 async def connectionCheck():
@@ -32,12 +30,15 @@ async def deleteData():
     col.delete_many({})
     return "deleted"
 
-@app.get(path='/shopping')
-async def selectShopping(year=2023):
-    query = {str(year) : {"$exists" : True}}
-    result = col.find(query, {"상품군별(1)":1,str(year):1, "_id" : 0, })
-    # result = col.find()
-    for i in result:
-        print(i)
-    # print(type(result))
-    return 0
+@app.get(path='/shop')
+async def selectShop(year=None, subject=None):
+    result= {"resultcode": response.status_code}
+    if year is None and subject is None:
+        listtmp = list(col.find({}, { "_id":0}))
+    elif subject is None:
+        listtmp = list(col.find({}, {"상품군별(1)":1, str(year):1, str(year)+"1":1, str(year)+"2":1, "_id":0}))
+    elif year is None:
+        listtmp = col.find_one({"상품군별(1)":subject},{'_id':0})
+    result['result'] = listtmp
+    
+    return result
