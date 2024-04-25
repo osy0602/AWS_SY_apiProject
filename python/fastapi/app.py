@@ -32,3 +32,12 @@ async def deleteData():
     col.delete_many({})
     return "deleted"
 
+@app.get(path='/shopping')
+async def selectShopping(year=2023):
+    query = {str(year) : {"$exists" : True}}
+    result = col.find(query, {"상품군별(1)":1,str(year):1, "_id" : 0, })
+    # result = col.find()
+    for i in result:
+        print(i)
+    # print(type(result))
+    return 0
