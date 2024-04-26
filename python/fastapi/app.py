@@ -1,28 +1,62 @@
 import requests
 from fastapi import FastAPI
 from pymongo import MongoClient
-from dotenv import dotenv_values
-config = dotenv_values("../../.env")
+# from dotenv import dotenv_values
+import pandas as pd
+# config = dotenv_values("../../.env")
+import os.path
+import json
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
+secret_file = os.path.join(BASE_DIR, '../../secret.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        errorMsg = "Set the {} environment variable.".format(setting)
+        return errorMsg
+
+HOSTNAME = get_secret("Local_Mongo_Hostname")
+USERNAME = get_secret("Local_Mongo_Username")
+PASSWORD = get_secret("Local_Mongo_Password")
+APIKEY = get_secret("data_apiKey")
 
 app = FastAPI()
 
 url = 'http://0.0.0.0:5000/cross_border'  # 5000번 포트에서 가져올게요
-response = requests.get(url)
-json_data = response.json()
-client = MongoClient(host=config["host"], port=27017)
+client = MongoClient(f'mongodb://{USERNAME}:{PASSWORD}@{HOSTNAME}')
 
 db = client['api_pj']
 col = db['cross_border']
 
-@app.get(path='/')
-async def connectionCheck():
-    return "connected"
 
-#json mongo에 저장
-@app.get(path='/dataset')
-async def getData():
-    col.insert_many(json_data)
-    return "dataset saved"
+
+#json server에 있는 data 받아오기
+@app.get(path='/getDataJSON')
+async def getDataJSON():
+    response = requests.get(url)
+    json_data = response.json()
+    return json_data
+
+#json data mongo insert
+@app.get(path='/datainsert')
+async def insertData():
+    response = await getDataJSON()
+    col.insert_many(response)
+    return col.find_one({},{"_id":0})
+
+@app.get(path='/get')
+async def get():
+    data = list(col.find({},{"_id":0}))
+    if len(data) == 0:
+        data = await insertData()
+    result = list(col.find({},{"_id":0}))
+    return result
 
 #mongo data delete
 @app.get(path='/datasetDelete')
@@ -30,6 +64,7 @@ async def deleteData():
     col.delete_many({})
     return "deleted"
 
+# year | subject input 후 해당하는 data 가져오기
 @app.get(path='/shop')
 async def selectShop(year=None, subject=None):
     result= {"resultcode": response.status_code}
@@ -42,3 +77,4 @@ async def selectShop(year=None, subject=None):
     result['result'] = listtmp
     
     return result
+

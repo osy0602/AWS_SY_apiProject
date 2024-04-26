@@ -11,3 +11,4 @@ python/fastapi/node_modules
 python/fastapi/package*
 
 .env
+secret.json
