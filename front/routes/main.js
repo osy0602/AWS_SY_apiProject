@@ -39,21 +39,24 @@ app.get("/", (req, res) => {
   res.send("Hello World~!!");
 });
 
-login
-app.post('/shop', (req, res) => {
-    const year = req.body;
-    const result = connection.query("select * from user where userid=? and passwd=?", [id, pw]);
-    // console.log(result);
-    if (result.length == 0) {
-        res.redirect('error.html')
-    }
-    if (id == 'admin' || id == 'root') {
-        console.log(id + " => Administrator Logined")
-        res.redirect('member.html?id=' + id);
-    } else {
-        console.log(id + " => User Logined")
-        res.redirect('user.html?id=' + id)
-    }
-})
+//login
+app.post("/shop", (req, res) => {
+  const year = req.body;
+  const result = connection.query(
+    "select * from user where userid=? and passwd=?",
+    [id, pw]
+  );
+  // console.log(result);
+  if (result.length == 0) {
+    res.redirect("error.html");
+  }
+  if (id == "admin" || id == "root") {
+    console.log(id + " => Administrator Logined");
+    res.redirect("member.html?id=" + id);
+  } else {
+    console.log(id + " => User Logined");
+    res.redirect("user.html?id=" + id);
+  }
+});
 
 module.exports = app;

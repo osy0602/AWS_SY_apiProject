@@ -1,6 +1,7 @@
 # node modules 파일
-./Front/node_modules
-./Front/package-lock.json
+/front/node_modules
+/front/package-lock.json
+/front/*.json
 
 # python 파일
 python/bin
@@ -9,6 +10,8 @@ pyvenv.cfg
 python/fastapi/__pycache__
 python/fastapi/node_modules
 python/fastapi/package*
+python/include/*
+
 
 .env
 secret.json
