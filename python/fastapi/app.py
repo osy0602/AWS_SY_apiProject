@@ -101,7 +101,7 @@ async def selectShop(year=None, subject=None):
     if year is None and subject is None:
         listtmp = list(col.find({}, { "_id":0}))
     elif subject is None:
-        listtmp = list(col.find({}, {"상품군별(1)":1, str(year):1, str(year)+"1":1, str(year)+"2":1, "_id":0}))
+        listtmp = list(col.find({}, {"상품군별(1)":1, str(year):1, str(year)+"1":1, str(year)+"2":1,"_id":0}))
     elif year is None:
         listtmp = col.find_one({"상품군별(1)":subject},{'_id':0})
     # result= {"resultcode": response_code}
@@ -110,7 +110,7 @@ async def selectShop(year=None, subject=None):
     return {"response_code":200, "result":listtmp}
 
 @app.get('/getJikguAll')
-async def select_st_info():
+async def getAll():
     result = session.query(Jikgu)
     return result.all()
 
@@ -120,7 +120,7 @@ async def insertSQL(year = null):
     data = data['result']
     result = session.query(Jikgu).filter(Jikgu.year == year).all()
     if (len(result) != 0):
-        return 'inserted',result
+        return {'resultcode' : 201 , "result":result}
     for i in range(1, len(data)):
         id = str(uuid.uuid4())
         subject = data[i]['상품군별(1)']
@@ -130,7 +130,12 @@ async def insertSQL(year = null):
         session.add(new_jikgu)
         session.commit()
         session.refresh(new_jikgu)
-    return session.query(Jikgu).filter(Jikgu.year == year).all()
-        
+    result = session.query(Jikgu).filter(Jikgu.year == year).all()
+    return {"resultcode": 200, "result" : result}
+
+@app.get('/getSQL')
+async def selectGet(year=null):
+    result = session.query(Jikgu).all()
+    return result
 
     # print(data[0]['상품군별(1)'])

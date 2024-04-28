@@ -1,15 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("sync-mysql");
-// const env = require('dotenv').config({ path: "../../.env" });
-
-// var connection = new mysql({
-//     host: process.env.host,
-//     user: process.env.user,
-//     password: process.env.password,
-//     database: process.env.database
-// });
-
+const env = require("dotenv").config({ path: "../../.env" });
+const axios = require("axios");
 const app = express();
 
 app.use(bodyParser.json());
@@ -17,46 +10,37 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// function template_nodata(res) {
-//     res.writeHead(200);
-//     var template = `
-//     <!doctype html>
-//     <html>
-//     <head>
-//         <title>Result</title>
-//         <meta charset="utf-8">
-//         <link type="text/css" rel="stylesheet" href="mainstyle.css" />
-//     </head>
-//     <body>
-//         <h3>데이터가 존재하지 않습니다.</h3>
-//     </body>
-//     </html>
-//     `;
-//     res.end(template);
-// }
-
-app.get("/", (req, res) => {
-  res.send("Hello World~!!");
+var connection = new mysql({
+  host: process.env.host,
+  user: process.env.user,
+  port: process.env.port,
+  password: process.env.password,
+  database: "jpjoin",
 });
 
-//login
-app.post("/shop", (req, res) => {
-  const year = req.body;
-  const result = connection.query(
-    "select * from user where userid=? and passwd=?",
-    [id, pw]
-  );
-  // console.log(result);
-  if (result.length == 0) {
-    res.redirect("error.html");
+app.get("/Hello", (req, res) => {
+  res.send("Hello World");
+});
+
+app.get("/selectJikgu", (req, res) => {
+  const year = req.query.year;
+  let tmp = connection.query("select * from jikgu where year=?", [year]);
+  //console.log(result);
+  console.log(tmp.length);
+  if (tmp.length == 0) {
+    const response = axios
+      .get("http://0.0.0.0:3000/insertSQL?year=" + String(year))
+      .then((Response) => {
+        tmp = Response.data;
+      });
   }
-  if (id == "admin" || id == "root") {
-    console.log(id + " => Administrator Logined");
-    res.redirect("member.html?id=" + id);
-  } else {
-    console.log(id + " => User Logined");
-    res.redirect("user.html?id=" + id);
-  }
+  tmp = connection.query("select * from jikgu where year=?", [year]);
+  console.log(tmp);
+  var result = {
+    "result code": res.statusCode,
+    result: tmp,
+  };
+  res.send(result);
 });
 
 module.exports = app;

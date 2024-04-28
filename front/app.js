@@ -18,11 +18,3 @@ app.use("/", main);
 app.listen(app.get("port"), () => {
   console.log("8000 Port: Server Started~!!");
 });
-
-app.post("/jikgu", (req, res) => {
-  const year = req.body;
-  const result = connection.query(
-    "select * from user where userid=? and passwd=?",
-    [id, pw]
-  );
-});
