@@ -11,7 +11,7 @@ python/fastapi/__pycache__
 python/fastapi/node_modules
 python/fastapi/package*
 python/include/*
-
+python/share/*
 
 .env
 secret.json

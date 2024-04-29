@@ -10,6 +10,10 @@ from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from models import Jikgu
 import uuid
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from dtaidistance import dtw
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -143,19 +147,78 @@ async def selectGet(year=null):
 
 @app.get('/getMallData')
 async def failedMall():
-    # response = requests.get('http://'+TEAMHOSTNAME+":3500/getCalcData")
-    # df_failedMall = pd.DataFrame(response.json())
+    response = requests.get('http://'+TEAMHOSTNAME+":3500/insertSQL")
+    df_failedMall = pd.DataFrame(response.json())
     
-    # column_dict = {'교육/도서/완구/오락':'사무·문구','가전':'가전', '컴퓨터/사무용품':'컴퓨터', '가구/수납용품':0, '건강/식품':'음·식료품', '의류/패션/잡화/뷰티':'의류 및 패션 관련 상품 + 화장품', '자동차/자동차용품':'생활·자동차용품', '레져/여행/공연':'스포츠·레저용품', '기타':'기 타'}
-    # df_failedMall['subject'] = df_failedMall['subject'].map(column_dict)
-    # df_filtered = df_failedMall[df_failedMall['subject'] != 0]
+    column_dict = {'교육/도서/완구/오락':'사무·문구','가전':'가전', '컴퓨터/사무용품':'컴퓨터', '가구/수납용품':0, '건강/식품':'음·식료품', '의류/패션/잡화/뷰티':'의류 및 패션 관련 상품 + 화장품', '자동차/자동차용품':'생활·자동차용품', '레져/여행/공연':'스포츠·레저용품', '기타':'기 타'}
+    df_failedMall['subject'] = df_failedMall['subject'].map(column_dict)
+    df_filtered = df_failedMall[df_failedMall['subject'] != 0]
+    # df_filtered = df_filtered.set_index('subject')
     # print(df_filtered)
-    col = ['cross_border']
+    
+    col = db['cross_border']
     column_list = ['사무·문구','가전','컴퓨터','음·식료품','의류 및 패션 관련 상품 + 화장품','생활·자동차용품','스포츠·레저용품','기 타']
     index_list = [2019, 20192, 2020, 20202, 2021, 20212, 2022, 20222, 2023, 20232]
     
-    tmp_list = list(col.find({}, {"상품군별(1)":1, '2019':1, '20192':1,'2020':1, '20202':1,'2021':1, '20212':1,'2022':1, '20222':1,'2023':1, '20232':1,"_id":0}))
-    list(col.find({}, {"상품군별(1)":1, str(year):1, str(year)+"1":1, str(year)+"2":1,"_id":0}))
-    print(tmp_list)
+    tmp_list = list(col.find({}, {"상품군별(1)":1, "20192":1,"20202":1,"20212":1,"20222":1,"20232":1,"_id":0}))
+    # print(tmp_list)
+    df_mall = pd.DataFrame(tmp_list)
+    # df_mall = df_mall.set_index('상품군별(1)')
+    column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
+    # print(df_mall)
+    my_mall_dict = []
+    for i in column_list_sample:
+        tmp_list = df_mall[df_mall['상품군별(1)'] == i]
+        tmp_dict = {i:list(tmp_list.iloc[:,0:5].values[0])}
+        my_mall_dict.append(tmp_dict)
+    
 
+    temp = []
+    tmp_list = []
+    closed_mall_dict = []
+    for i in column_list:
+        for j in range(2019, 2024):
+            tmp_list = df_filtered[(df_filtered['subject'] == i) & (df_filtered['year'] == j)]
+            temp.append(tmp_list.iloc[:,3:4].values[0][0])
+        closed_mall_dict.append({i : temp})
+        temp = []
+    print(my_mall_dict)
+    print(closed_mall_dict)
+    
+    col = db['data_calc']
+    col.insert_one({'shopping':my_mall_dict})
+    col.insert_one({'mall': closed_mall_dict})
+        
     return 0
+
+
+@app.get('/getCalcData')
+async def calcData():
+    col = db['data_calc']
+    shopping = (list(col.find({}, {"shopping":1, '_id':0})))[0]['shopping']
+    # print(shopping)
+    closed = (list(col.find({}, {"mall":1, '_id':0})))[1]['mall']
+    # print(shopping[0]['shopping'][0]['컴퓨터 및 주변기기'][0])
+    # print(closed[0]['사무·문구'])
+    column_list = ['사무·문구','가전','컴퓨터','음·식료품','의류 및 패션 관련 상품 + 화장품','생활·자동차용품','스포츠·레저용품','기 타']
+    column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
+    sync_list = []
+    year_list = [2019,2020,2021,2022,2023]
+    for i in range(len(column_list)):
+        closed_data = list(map(float, closed[i][column_list[i]]))
+        shopping_data = shopping[i][column_list_sample[i]]
+        distance = dtw.distance(closed_data, shopping_data)
+        sync_list.append(distance)
+        plt.rcParams['font.family'] = 'NanumBarunGothic'
+        plt.figure()
+        plt.plot(year_list, shopping_data, label = '직구')
+        plt.plot(year_list, closed_data, label = '폐업')
+        plt.title(column_list_sample[i] + '연도별 증감율 비교')
+        plt.legend()
+        plt.savefig(column_list_sample[i] +'.png')
+
+    
+    sync_dict = dict(zip(column_list_sample, sync_list))
+    return sync_dict
+
+
