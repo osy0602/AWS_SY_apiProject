@@ -35,12 +35,11 @@ app.get("/selectJikgu", (req, res) => {
       });
   }
   tmp = connection.query("select * from jikgu where year=?", [year]);
-  console.log(tmp);
+  //console.log(tmp);
   var result = {
     "result code": res.statusCode,
     result: tmp,
   };
   res.send(result);
 });
-
 module.exports = app;

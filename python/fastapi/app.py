@@ -33,6 +33,7 @@ PORT = get_secret("Mysql_Port")
 SQLUSERNAME = get_secret("Mysql_Username")
 SQLPASSWORD = get_secret("Mysql_Password")
 SQLDBNAME = get_secret("Mysql_DBname")
+TEAMHOSTNAME = get_secret("My_Team_Hostname")
 
 DB_URL = f'mysql+pymysql://{SQLUSERNAME}:{SQLPASSWORD}@{HOSTNAME}:{PORT}/{SQLDBNAME}'
 
@@ -139,3 +140,22 @@ async def selectGet(year=null):
     return result
 
     # print(data[0]['상품군별(1)'])
+
+@app.get('/getMallData')
+async def failedMall():
+    # response = requests.get('http://'+TEAMHOSTNAME+":3500/getCalcData")
+    # df_failedMall = pd.DataFrame(response.json())
+    
+    # column_dict = {'교육/도서/완구/오락':'사무·문구','가전':'가전', '컴퓨터/사무용품':'컴퓨터', '가구/수납용품':0, '건강/식품':'음·식료품', '의류/패션/잡화/뷰티':'의류 및 패션 관련 상품 + 화장품', '자동차/자동차용품':'생활·자동차용품', '레져/여행/공연':'스포츠·레저용품', '기타':'기 타'}
+    # df_failedMall['subject'] = df_failedMall['subject'].map(column_dict)
+    # df_filtered = df_failedMall[df_failedMall['subject'] != 0]
+    # print(df_filtered)
+    col = ['cross_border']
+    column_list = ['사무·문구','가전','컴퓨터','음·식료품','의류 및 패션 관련 상품 + 화장품','생활·자동차용품','스포츠·레저용품','기 타']
+    index_list = [2019, 20192, 2020, 20202, 2021, 20212, 2022, 20222, 2023, 20232]
+    
+    tmp_list = list(col.find({}, {"상품군별(1)":1, '2019':1, '20192':1,'2020':1, '20202':1,'2021':1, '20212':1,'2022':1, '20222':1,'2023':1, '20232':1,"_id":0}))
+    list(col.find({}, {"상품군별(1)":1, str(year):1, str(year)+"1":1, str(year)+"2":1,"_id":0}))
+    print(tmp_list)
+
+    return 0
