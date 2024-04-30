@@ -8,7 +8,7 @@ import os.path
 import json
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
-from models import Jikgu
+from models import Jikgu,JPData,JPDictData
 import uuid
 import numpy as np
 import matplotlib
@@ -84,7 +84,7 @@ async def insertData():
     col.insert_many(response_data)
     return {"result_code" : response_code, "result": col.find_one({},{"_id":0})}
 
-
+#mongo data get
 @app.get(path='/get')
 async def get():
     data = list(col.find({},{"_id":0}))
@@ -99,7 +99,7 @@ async def deleteData():
     col.delete_many({})
     return "deleted"
 
-# year | subject input 후 해당하는 data 가져오기
+# year | subject input 후 해당하는 data mongo에서 가져오기
 @app.get(path='/shop')
 async def selectShop(year=None, subject=None):
     # result= {"resultcode": response_code}
@@ -119,11 +119,13 @@ async def getAll():
     result = session.query(Jikgu)
     return result.all()
 
+# sql에 상품군별 insert하기
 @app.get('/insertSQL')
 async def insertSQL(year = null):
     data = await selectShop(year)
     data = data['result']
     result = session.query(Jikgu).filter(Jikgu.year == year).all()
+    print("3000",len(result))
     if (len(result) != 0):
         return {'resultcode' : 201 , "result":result}
     for i in range(1, len(data)):
@@ -220,5 +222,30 @@ async def calcData():
     
     sync_dict = dict(zip(column_list_sample, sync_list))
     return sync_dict
+
+# graph data sql로 insert하기
+@app.get('/insertImage')
+async def insertImage():
+    for filename in os.listdir('./'):
+        if filename.endswith(".png"):
+            file_path = os.path.join('./', filename)
+            with open(file_path, 'rb') as f:
+                image_data = f.read()
+            jpdata = JPData(subject = filename, image = image_data)
+            session.add(jpdata)
+            session.commit()
+            print("image inserted")
+            session.close()
+    
+
+@app.get('/insertDtwData')
+async def insertDtw():
+    dict = await calcData()
+    for k, v in dict.items():
+        data = JPDictData(subject = k, data = v)
+        session.add(data)
+        session.commit()
+        print("insert completed")
+        session.close()
 
 

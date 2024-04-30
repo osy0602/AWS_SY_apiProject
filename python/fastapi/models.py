@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, INT
+from sqlalchemy import Column, String, INT, BLOB, FLOAT
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -12,3 +12,12 @@ class Jikgu(Base):
     purchase = Column(INT, unique=False, nullable=False)
     percentage = Column(INT, unique=False, nullable=False)
 
+class JPData(Base):
+    __tablename__ = 'jpimage'
+    subject = Column(String(40), primary_key=True)
+    image = Column(BLOB)
+
+class JPDictData(Base):
+    __tablename__ = 'jpDtwData'
+    subject = Column(String(40), primary_key=True)
+    data = Column(FLOAT)

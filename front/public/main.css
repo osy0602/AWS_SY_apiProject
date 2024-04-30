@@ -16,7 +16,7 @@ a {
 .header {
   background-color: #0f172a;
   width: 100vw;
-  height: 7%;
+  height: 10%;
   margin: 0;
   /* border-bottom: 1px solid #e0e0e0; */
   display: flex;
@@ -24,16 +24,20 @@ a {
   justify-content: space-between;
 }
 .h_div {
-  margin: 25px;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .b_div {
-  margin: 200px;
+  margin: 10px;
 }
 .title {
-  font-size: 30px;
+  font-size: 20px;
   /* 폰트 굵기 100-700 */
   font-weight: 700;
   color: #ffffff;
+  margin-bottom: 3px;
 }
 /* 하단 contents */
 .main {
@@ -44,9 +48,10 @@ a {
 /* 메뉴바 태그들 */
 .menu {
   background-color: #0f172a;
-  width: 300px;
+  width: 220px;
   height: 100%;
   margin: 0;
+  padding-top: 20px;
   /* border-right: 1px solid #e0e0e0; */
 }
 .m_div {
@@ -59,13 +64,34 @@ a {
 }
 .m_div a {
   color: #e0e8f6;
-  font-size: 15px;
-  /* 폰트 굵기 100-700 */
-  font-weight: 600;
-  margin-left: 50px;
+  font-size: 13px;
+  margin: 10px;
 }
 .bottom {
+  position: fixed;
+  bottom: 0;
   background-color: #0f172a;
-  width: 100vw;
-  height: 100px;
+  width: max-content;
+  height: 30%;
+  padding: 5px;
+  color: white;
+}
+.todaytable {
+  color: #3b82f6;
+}
+.todaytable td {
+  font-size: 17px;
+}
+.contents {
+  width: 80%;
+}
+.contents_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 40px;
+}
+.jikgutable {
+  background-color: #ffffff;
 }

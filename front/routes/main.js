@@ -34,7 +34,10 @@ app.get("/selectJikgu", (req, res) => {
         tmp = Response.data;
       });
   }
-  tmp = connection.query("select * from jikgu where year=?", [year]);
+  tmp = connection.query(
+    "select * from jikgu where year=? order by purchase desc",
+    [year]
+  );
   //console.log(tmp);
   var result = {
     "result code": res.statusCode,
@@ -42,4 +45,5 @@ app.get("/selectJikgu", (req, res) => {
   };
   res.send(result);
 });
+
 module.exports = app;
