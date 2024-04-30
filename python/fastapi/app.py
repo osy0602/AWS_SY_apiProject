@@ -15,6 +15,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from dtaidistance import dtw
 from flask import Flask, render_template
+from wordcloud import WordCloud
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -273,3 +274,28 @@ async def usingData():
     filtered_data = [item for item in tmp_list if item["상품군별(1)"] == "합계"]
 
     return {"result code" :200, "result" :filtered_data}
+
+@app.get('/piechart')
+async def piechart():
+    col = db['cross_border']
+    tmp_list = list(col.find({}, {"상품군별(1)":1, "2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"_id":0}))
+
+    result = [(data['2023'], data['상품군별(1)']) for data in tmp_list if '2023' in data]
+    result.pop(0)
+    print(result)
+    categories = [data[1] for data in result]  # 카테고리
+    sales = [data[0] for data in result] 
+    # 판매량 기준으로 정렬 (내림차순)
+    sorted_idx = np.argsort(sales)  # 인덱스 추출
+    top10_idx = sorted_idx[-8:]  # 상위 10개 인덱스
+
+    # 상위 10개 카테고리와 판매량 추출
+    top10_categories = [categories[i] for i in top10_idx]
+    top10_sales = [sales[i] for i in top10_idx]
+    plt.rcParams['font.family'] = 'NanumBarunGothic'
+    colors = ['#34617c', '#56829c', '#86a8bd', '#b1d5d6', '#9fc8c9']
+    plt.pie(top10_sales, labels=top10_categories,colors = colors, autopct="%1.1f%%") 
+    plt.savefig('../../front/public/pichart.png')
+
+
+
