@@ -72,26 +72,43 @@ a {
   bottom: 0;
   background-color: #0f172a;
   width: max-content;
-  height: 30%;
-  padding: 5px;
+  height: 24%;
   color: white;
 }
 .todaytable {
   color: #3b82f6;
-}
-.todaytable td {
   font-size: 17px;
 }
 .contents {
   width: 80%;
+  margin-left: 60px;
+  margin-right: 60px;
 }
 .contents_header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin: 40px;
+  margin-bottom: 30px;
 }
-.jikgutable {
+.contents_select {
+  width: 70px;
+  height: 30px;
+}
+.contents_table {
+  width: 100%;
   background-color: #ffffff;
+  color: #303030;
+}
+.contents_table th {
+  padding: 10px;
+  border-bottom: 1px solid #949494;
+}
+.contents_table td {
+  text-align: center;
+  padding: 10px;
+}
+.contents_table tr:nth-child(even) {
+  text-align: center;
+  background-color: #f7f7f7;
 }

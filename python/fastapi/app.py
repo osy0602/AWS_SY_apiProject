@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from dtaidistance import dtw
+from flask import Flask, render_template
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -125,7 +126,7 @@ async def insertSQL(year = null):
     data = await selectShop(year)
     data = data['result']
     result = session.query(Jikgu).filter(Jikgu.year == year).all()
-    print("3000",len(result))
+    #print(result)
     if (len(result) != 0):
         return {'resultcode' : 201 , "result":result}
     for i in range(1, len(data)):
@@ -142,8 +143,8 @@ async def insertSQL(year = null):
 
 @app.get('/getSQL')
 async def selectGet(year=null):
-    result = session.query(Jikgu).all()
-    return result
+    result = session.query(Jikgu)
+    return result.all()
 
     # print(data[0]['상품군별(1)'])
 
@@ -217,7 +218,7 @@ async def calcData():
         plt.plot(year_list, closed_data, label = '폐업')
         plt.title(column_list_sample[i] + '연도별 증감율 비교')
         plt.legend()
-        plt.savefig(column_list_sample[i] +'.png')
+        plt.savefig('../../front/public/'+column_list_sample[i] +'.png')
 
     
     sync_dict = dict(zip(column_list_sample, sync_list))
@@ -238,6 +239,7 @@ async def insertImage():
             session.close()
     
 
+
 @app.get('/insertDtwData')
 async def insertDtw():
     dict = await calcData()
@@ -249,3 +251,15 @@ async def insertDtw():
         session.close()
 
 
+# 현주한테 줘야하는 api 연도별 subject별 구매율 뽑아야함 
+@app.get('/usingData')
+async def usingData():
+    col = db['cross_border']
+    tmp_list = list(col.find({}, {"상품군별(1)":1, "2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"_id":0}))
+    column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
+    select_list =[]
+    for item in tmp_list:
+        if item['상품군별(1)'] in column_list_sample:
+            select_list.append(item)
+
+    return select_list

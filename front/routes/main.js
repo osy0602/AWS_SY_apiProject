@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mysql = require("sync-mysql");
-const env = require("dotenv").config({ path: "../../.env" });
+const pool = require("../pool");
 const axios = require("axios");
 const app = express();
 
@@ -10,40 +9,35 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-var connection = new mysql({
-  host: process.env.host,
-  user: process.env.user,
-  port: process.env.port,
-  password: process.env.password,
-  database: "jpjoin",
+app.get("/", (req, res) => {
+  res.redirect("index.html");
 });
 
-app.get("/Hello", (req, res) => {
-  res.send("Hello World");
-});
-
-app.get("/selectJikgu", (req, res) => {
+app.get("/selectJikgu", async (req, res) => {
   const year = req.query.year;
-  let tmp = connection.query("select * from jikgu where year=?", [year]);
-  //console.log(result);
-  console.log(tmp.length);
-  if (tmp.length == 0) {
-    const response = axios
-      .get("http://0.0.0.0:3000/insertSQL?year=" + String(year))
-      .then((Response) => {
-        tmp = Response.data;
-      });
+  //console.log(year);
+  try {
+    let tmp = await pool.query("select * from jikgu where year=?", [year]);
+    //console.log(tmp);
+    //console.log(tmp[0].length);
+    if (tmp[0].length == 0) {
+      const response = await axios.get(
+        "http://0.0.0.0:3000/insertSQL?year=" + String(year)
+      );
+    }
+    tmp = await pool.query(
+      "select * from jikgu where year=? order by purchase desc",
+      [year]
+    );
+    var result = {
+      "result code": res.statusCode,
+      result: tmp[0],
+    };
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
-  tmp = connection.query(
-    "select * from jikgu where year=? order by purchase desc",
-    [year]
-  );
-  //console.log(tmp);
-  var result = {
-    "result code": res.statusCode,
-    result: tmp,
-  };
-  res.send(result);
 });
 
 module.exports = app;
