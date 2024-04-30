@@ -126,10 +126,13 @@ async def insertSQL(year = null):
     data = await selectShop(year)
     data = data['result']
     result = session.query(Jikgu).filter(Jikgu.year == year).all()
+    column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
     #print(result)
     if (len(result) != 0):
         return {'resultcode' : 201 , "result":result}
     for i in range(1, len(data)):
+        if(data[i]['상품군별(1)'] not in column_list_sample):
+            continue
         id = str(uuid.uuid4())
         subject = data[i]['상품군별(1)']
         purchase = data[i][str(year)]
@@ -148,27 +151,31 @@ async def selectGet(year=null):
 
     # print(data[0]['상품군별(1)'])
 
+# 현주 api 접근해서 내 몽고디비에 전처리 해서 저장
 @app.get('/getMallData')
 async def failedMall():
+    # 현주 api 접근
     response = requests.get('http://'+TEAMHOSTNAME+":3500/insertSQL")
-    df_failedMall = pd.DataFrame(response.json())
+    response = response.json()
+    response = response['result']
+    df_failedMall = pd.DataFrame(response)
     
+    #column 맞추는 작업 위해 정제
     column_dict = {'교육/도서/완구/오락':'사무·문구','가전':'가전', '컴퓨터/사무용품':'컴퓨터', '가구/수납용품':0, '건강/식품':'음·식료품', '의류/패션/잡화/뷰티':'의류 및 패션 관련 상품 + 화장품', '자동차/자동차용품':'생활·자동차용품', '레져/여행/공연':'스포츠·레저용품', '기타':'기 타'}
     df_failedMall['subject'] = df_failedMall['subject'].map(column_dict)
     df_filtered = df_failedMall[df_failedMall['subject'] != 0]
     # df_filtered = df_filtered.set_index('subject')
-    # print(df_filtered)
+    print(df_filtered)
     
+    #내 mongodb 접근해서 데이터 가져옴
     col = db['cross_border']
     column_list = ['사무·문구','가전','컴퓨터','음·식료품','의류 및 패션 관련 상품 + 화장품','생활·자동차용품','스포츠·레저용품','기 타']
-    index_list = [2019, 20192, 2020, 20202, 2021, 20212, 2022, 20222, 2023, 20232]
     
+    #증감량만 가져오기
     tmp_list = list(col.find({}, {"상품군별(1)":1, "20192":1,"20202":1,"20212":1,"20222":1,"20232":1,"_id":0}))
-    # print(tmp_list)
     df_mall = pd.DataFrame(tmp_list)
-    # df_mall = df_mall.set_index('상품군별(1)')
     column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
-    # print(df_mall)
+
     my_mall_dict = []
     for i in column_list_sample:
         tmp_list = df_mall[df_mall['상품군별(1)'] == i]
@@ -192,7 +199,7 @@ async def failedMall():
     col.insert_one({'shopping':my_mall_dict})
     col.insert_one({'mall': closed_mall_dict})
         
-    return 0
+    return {"result code":200, "result":my_mall_dict}
 
 
 @app.get('/getCalcData')
@@ -222,7 +229,7 @@ async def calcData():
 
     
     sync_dict = dict(zip(column_list_sample, sync_list))
-    return sync_dict
+    return {"result code" : 200, "result" :sync_dict}
 
 # graph data sql로 insert하기
 @app.get('/insertImage')
@@ -243,23 +250,26 @@ async def insertImage():
 @app.get('/insertDtwData')
 async def insertDtw():
     dict = await calcData()
+    if len(session.query(JPDictData).all()) != 0:
+        return dict
     for k, v in dict.items():
         data = JPDictData(subject = k, data = v)
         session.add(data)
         session.commit()
         print("insert completed")
         session.close()
-
+    return dict
 
 # 현주한테 줘야하는 api 연도별 subject별 구매율 뽑아야함 
 @app.get('/usingData')
 async def usingData():
     col = db['cross_border']
     tmp_list = list(col.find({}, {"상품군별(1)":1, "2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"_id":0}))
-    column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
-    select_list =[]
-    for item in tmp_list:
-        if item['상품군별(1)'] in column_list_sample:
-            select_list.append(item)
+    #column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
+    # select_list =[]
+    # for item in tmp_list:
+    #     if item['상품군별(1)'] in column_list_sample:
+    #         select_list.append(item)
+    filtered_data = [item for item in tmp_list if item["상품군별(1)"] == "합계"]
 
-    return select_list
+    return {"result code" :200, "result" :filtered_data}
