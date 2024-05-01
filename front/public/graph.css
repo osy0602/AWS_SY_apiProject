@@ -1,11 +1,12 @@
 body {
-  background-color: #f6f8fc;
-  font-family: "Noto Sans KR", sans-serif;
+  background-color: #faf8f3;
+  font-family: "Nanum Gothic Coding", monospace;
   font-optical-sizing: auto;
   font-style: normal;
   width: 100%;
   height: 100vh;
   margin: 0;
+  overflow: hidden;
 }
 /* a 태그 사용 시 밑줄과 색 변경 제거 */
 a {
@@ -14,17 +15,19 @@ a {
 }
 /* 헤더 태그들 */
 .header {
-  background-color: #0f172a;
+  background-color: #fff;
   width: 100vw;
-  height: 10%;
+  height: 8%;
   margin: 0;
   /* border-bottom: 1px solid #e0e0e0; */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #ececec;
+  /* box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1); */
 }
 .h_div {
-  margin-left: 15px;
+  margin-left: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,11 +36,18 @@ a {
   margin: 10px;
 }
 .title {
-  font-size: 20px;
-  /* 폰트 굵기 100-700 */
-  font-weight: 700;
+  font-size: 25px;
+  font-weight: 500;
+  color: #ff6f0e;
   margin-bottom: 3px;
-  color: #ffffff;
+  font-family: "Jua", sans-serif;
+}
+.title_contents {
+  font-size: 25px;
+  font-weight: 700;
+  color: black;
+  margin-bottom: 3px;
+  margin-left: 15px;
 }
 /* 하단 contents */
 .main {
@@ -48,52 +58,81 @@ a {
 }
 /* 메뉴바 태그들 */
 .menu {
-  background-color: #0f172a;
-  width: 220px;
+  background-color: #f8f5f4;
+  width: 250px;
   height: 100%;
   margin: 0;
-  padding-top: 20px;
   /* border-right: 1px solid #e0e0e0; */
-}
-.menu_horizon {
-  display: flex;
-}
-.menu_item {
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.menu_item:hover {
-  color: #3b82f6;
-  cursor: pointer;
-}
-.menu_item.selected {
-  border-bottom: 3px solid #3b82f6; /* 선택된 메뉴에 하단 border 추가 */
-  color: #3b82f6;
 }
 .m_div {
   width: 100%;
   height: 5vh;
-  padding-top: 10px;
+  padding-top: 30px;
+  background-color: #f8f5f4;
 }
-.m_div a:hover {
-  color: #3b82f6;
+.m_div:hover {
+  color: #ffffff;
+  background-color: #eed5bb;
 }
 .m_div a {
-  color: #e0e8f6;
-  font-size: 13px;
-  margin: 10px;
+  color: #222222;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+}
+.m_div a:hover {
+  color: #ffffff;
+}
+.m_div_selected {
+  /* 선택된 메뉴 색상 */
+  width: 100%;
+  height: 5vh;
+  padding-top: 30px;
+  background-color: #fcb43b;
+}
+.m_div_selected:hover {
+  color: #ffffff;
+  background-color: #eed5bb;
+}
+.m_div_selected a {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+}
+.m_div_selected a:hover {
+  color: #ffffff;
 }
 .bottom {
   position: fixed;
   bottom: 0;
-  background-color: #0f172a;
+  background-color: #fff;
   width: max-content;
-  height: 24%;
-  color: white;
+  height: 20%;
+  color: #000000;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  margin-left: 20px;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.bottom tbody {
+  margin: 0 auto;
+}
+.bottom tr {
+  padding-bottom: 5px;
 }
 .todaytable {
-  color: #3b82f6;
-  font-size: 17px;
+  color: #95df70;
+  font-size: 13px;
+  font-weight: 700;
 }
 .contents {
   justify-content: center; /* 수평 가운데 정렬 */
@@ -111,28 +150,40 @@ a {
 }
 .custom_button {
   font-size: 17px;
-  background-color: #3b82f6; /* 배경색 */
+  background-color: #ff6f0e; /* 배경색 */
   color: white; /* 글자색 */
   padding: 10px 15px; /* 안쪽 여백 */
   border: none; /* 테두리 없음 */
   border-radius: 5px; /* 모서리를 둥글게 만듦 */
   cursor: pointer; /* 포인터로 마우스 모양 변경 */
 }
-.custom_button:hover {
-  background-color: #45a049; /* 배경색 변경 */
-}
+/* .custom_button:hover {
+  background-color: #45a049;
+} */
 .image-container {
-  width: 600px; /* 이미지 컨테이너의 가로 크기 */
-  height: 450px; /* 이미지 컨테이너의 세로 크기 */
   border-radius: 10px; /* 원형 모서리 */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 */
   overflow: hidden; /* 내부 내용이 넘치면 숨김 */
   margin: 0 auto;
 }
 
 .image-container img {
-  width: 100%; /* 이미지를 컨테이너의 가로 크기에 맞게 조정 */
-  height: 100%; /* 이미지를 컨테이너의 세로 크기에 맞게 조정 */
+  width: 100%;
   object-fit: cover; /* 이미지를 확대 또는 축소하여 컨테이너에 꽉 채움 */
   border-radius: 10px; /* 이미지의 모서리도 둥글게 */
+}
+
+.menu_item {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.menu_item:hover {
+  color: #3b82f6;
+  cursor: pointer;
+}
+.menu_item.selected {
+  border-bottom: 3px solid #3b82f6; /* 선택된 메뉴에 하단 border 추가 */
+  color: #3b82f6;
+}
+.menu_horizon {
+  display: flex;
 }

@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, INT, BLOB, FLOAT
+from sqlalchemy import Column, String, INT, BLOB, FLOAT, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -15,7 +15,7 @@ class Jikgu(Base):
 class JPData(Base):
     __tablename__ = 'jpimage'
     subject = Column(String(40), primary_key=True)
-    image = Column(BLOB)
+    image = Column(LargeBinary)
 
 class JPDictData(Base):
     __tablename__ = 'jpDtwData'

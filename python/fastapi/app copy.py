@@ -180,7 +180,7 @@ async def failedMall():
     df_failedMall['subject'] = df_failedMall['subject'].map(column_dict)
     df_filtered = df_failedMall[df_failedMall['subject'] != 0]
     # df_filtered = df_filtered.set_index('subject')
-    #print(df_filtered)
+    print(df_filtered)
     
     #내 mongodb 접근해서 데이터 가져옴
     col = db['cross_border']
@@ -204,7 +204,7 @@ async def failedMall():
     for i in column_list:
         for j in range(2019, 2024):
             tmp_list = df_filtered[(df_filtered['subject'] == i) & (df_filtered['year'] == j)]
-            temp.append(float(tmp_list.iloc[:,3:4].values[0][0]))
+            temp.append(tmp_list.iloc[:,3:4].values[0][0])
         closed_mall_dict.append({i : temp})
         temp = []
     #print(my_mall_dict)
@@ -214,14 +214,14 @@ async def failedMall():
     col.insert_one({'shopping':my_mall_dict})
     col.insert_one({'mall': closed_mall_dict})
         
-    return {"result code":200, "result":closed_mall_dict}
+    return {"result code":200, "result":my_mall_dict}
 
 # mongodb에서 getCalcData 가져와서 graph 뽑기
 @app.get('/getCalcData')
 async def calcData():
     col = db['data_calc']
     print(col.count_documents({}))
-    if (col.count_documents({}) == 0):
+    if (col.count() == 0):
         await failedMall()
     shopping = (list(col.find({}, {"shopping":1, '_id':0})))[0]['shopping']
     # print(shopping)
@@ -231,7 +231,7 @@ async def calcData():
     column_list = ['사무·문구','가전','컴퓨터','음·식료품','의류 및 패션 관련 상품 + 화장품','생활·자동차용품','스포츠·레저용품','기 타']
     column_list_sample = ['사무·문구','가전·전자·통신기기','컴퓨터 및 주변기기','음·식료품','의류 및 패션 관련 상품','생활·자동차용품','스포츠·레저용품','기 타']
     sync_list = []
-    year_list = ["2019","2020","2021","2022","2023"]
+    year_list = [2019,2020,2021,2022,2023]
     for i in range(len(column_list)):
         closed_data = list(map(float, closed[i][column_list[i]]))
         shopping_data = shopping[i][column_list_sample[i]]
@@ -239,8 +239,8 @@ async def calcData():
         sync_list.append(distance)
         plt.rcParams['font.family'] = 'NanumBarunGothic'
         plt.figure()
-        plt.plot(year_list, shopping_data, label = '직구', marker = 'o', markersize = 5)
-        plt.plot(year_list, closed_data, label = '폐업', marker = 'o', markersize = 5)
+        plt.plot(year_list, shopping_data, label = '직구')
+        plt.plot(year_list, closed_data, label = '폐업')
         plt.title(column_list_sample[i] + '연도별 증감율 비교')
         plt.legend()
         plt.savefig('../../front/public/'+column_list_sample[i] +'.png')
@@ -314,7 +314,7 @@ async def piechart():
     top10_categories = [categories[i] for i in top10_idx]
     top10_sales = [sales[i] for i in top10_idx]
     plt.rcParams['font.family'] = 'NanumBarunGothic'
-    colors = ['#EAEBEE', '#DBEDDD', '#EED5BB', '#F8E4D9', '#FF7E36']
+    colors = ['#34617c', '#56829c', '#86a8bd', '#b1d5d6', '#9fc8c9']
     plt.pie(top10_sales, labels=top10_categories,colors = colors, autopct="%1.1f%%") 
     plt.savefig('../../front/public/pichart.png')
     return {"result code" :200, "result" : "pi chart saved..."}

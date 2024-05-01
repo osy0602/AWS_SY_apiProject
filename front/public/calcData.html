@@ -5,16 +5,19 @@
     <title>main</title>
     <link type="text/css" rel="stylesheet" href="graph.css" />
     <link
+      href="https://fonts.googleapis.com/css2?family=Jua&display=swap"
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
-    <script src="main.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic+Coding&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- 레이아웃 헤더  -->
     <div class="header">
       <div class="h_div">
-        <img src="headerIcron.png" style="width: 35px; margin-right: 10px" />
+        <img src="icon.png" style="width: 35px; margin-right: 10px" />
         <a href="/" class="title">온더락</a>
       </div>
     </div>
@@ -30,19 +33,23 @@
             >온라인 쇼핑몰 폐업 데이터</a
           >
         </div>
-        <div class="m_div">
-          <a href="#">직구 영향 업종</a>
+        <div class="m_div_selected">
+          <a href="./calcData.html">직구 영향 업종</a>
         </div>
         <div class="m_div">
-          <a href="#">연도별 직구, 폐업 데이터 비교</a>
+          <a href="http://192.168.1.61:8500/compareData.html"
+            >연도별 직구, 폐업 데이터 비교</a
+          >
         </div>
         <div class="bottom">
-          <table id="todayClosureTable">
+          <table style="margin-bottom: 10px">
             <thead>
               <tr>
                 <th style="font-size: 15px">오늘 폐업한 온라인 쇼핑몰</th>
               </tr>
             </thead>
+          </table>
+          <table id="todayClosureTable">
             <tbody id="todayClosureData"></tbody>
           </table>
         </div>
@@ -79,9 +86,7 @@
         </div>
         <div class="contents">
           <div class="contents_header">
-            <div class="title" style="color: black; margin-left: 15px">
-              가장 영향을 많이 받은 업종 TOP 5
-            </div>
+            <div class="title_contents">가장 영향을 많이 받은 업종 TOP 4</div>
           </div>
           <div class="menu_horizon">
             <div id="menu-item-1" class="menu_item">음·식료품</div>
@@ -117,11 +122,43 @@
                 });
               });
             });
+            fetch("http://192.168.1.67:3000/getCalcData")
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Network response was not ok");
+                }
+                return response.json();
+              })
+              .then((data) => {
+                // 데이터를 받은 후 3초 후에 페이지 새로고침
+                setTimeout(() => {
+                  location.reload();
+                }, 3000); // 3초(3000밀리초) 대기
+              })
+              .catch((error) => {
+                console.error(
+                  "There was a problem with your fetch operation:",
+                  error
+                );
+              });
 
             function redirectToPage() {
               // 다른 HTML 페이지로 이동
               window.location.href = "/calcDataBottom.html";
             }
+            function reloadPage() {
+              setInterval(function () {
+                location.reload();
+              }, 3000); // 3초(3000밀리초)마다 실행
+            }
+
+            document.getElementById("displayedImage").onerror = function () {
+              this.src = "loading.gif";
+              reloadPage();
+              setTimeout(function () {
+                img.src = "graph.png";
+              }, 3000); // 3초 후에 graph.png로 변경
+            };
           </script>
         </div>
         <div class="btn_div">
