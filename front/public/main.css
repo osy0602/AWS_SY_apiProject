@@ -84,7 +84,6 @@ a {
 .m_div a:hover {
   color: #ffffff;
 }
-/* 추가 */
 .m_div_selected {
   /* 선택된 메뉴 색상 */
   width: 100%;
@@ -97,7 +96,7 @@ a {
   background-color: #eed5bb;
 }
 .m_div_selected a {
-  color: #222222;
+  color: #ffffff;
   font-size: 15px;
   font-weight: 700;
   padding: 10px;
@@ -107,13 +106,12 @@ a {
 .m_div_selected a:hover {
   color: #ffffff;
 }
-/* 추가 */
 .bottom {
   position: fixed;
   bottom: 0;
   background-color: #fff;
   width: max-content;
-  height: 20%;
+  height: 25%;
   color: #000000;
   border-radius: 20px;
   margin-bottom: 25px;
@@ -138,7 +136,7 @@ a {
 .contents {
   width: 60%;
   height: 100%;
-  padding-top: 120px;
+  padding-top: 80px;
   margin: 0 auto;
 }
 .contents_header {
@@ -159,7 +157,7 @@ a {
   font-size: 15px;
 }
 .contents_table {
-  width: 100%;
+  width: 90%;
   background-color: #ffffff;
   border: 0px;
   color: #303030;
@@ -172,13 +170,13 @@ a {
   color: #2d2d2d;
 }
 .contents_table th {
-  padding: 20px;
+  padding: 15px;
   border-bottom: 1px solid #ececec;
   border-radius: 20px;
 }
 .contents_table td {
   text-align: center;
-  padding: 20px;
+  padding: 15px;
 }
 .contents_table tr {
   text-align: center;

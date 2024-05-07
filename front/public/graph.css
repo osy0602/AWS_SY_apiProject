@@ -112,7 +112,7 @@ a {
   bottom: 0;
   background-color: #fff;
   width: max-content;
-  height: 20%;
+  height: 25%;
   color: #000000;
   border-radius: 20px;
   margin-bottom: 25px;
@@ -123,6 +123,7 @@ a {
   justify-content: center;
   align-items: center;
 }
+
 .bottom tbody {
   margin: 0 auto;
 }
@@ -177,12 +178,12 @@ a {
   margin-bottom: 10px;
 }
 .menu_item:hover {
-  color: #3b82f6;
+  color: #ff6f0e;
   cursor: pointer;
 }
 .menu_item.selected {
-  border-bottom: 3px solid #3b82f6; /* 선택된 메뉴에 하단 border 추가 */
-  color: #3b82f6;
+  border-bottom: 3px solid #ff6f0e; /* 선택된 메뉴에 하단 border 추가 */
+  color: #ff6f0e;
 }
 .menu_horizon {
   display: flex;
